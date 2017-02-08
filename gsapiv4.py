@@ -1,6 +1,8 @@
 from pprint import pprint
 import httplib2
 import apiclient.discovery
+import oauth2client.clientsecrets as clientsecrets
+from oauth2client.client import OAuth2WebServerFlow
 import googleapiclient.errors
 from oauth2client.service_account import ServiceAccountCredentials
 import re
@@ -17,6 +19,32 @@ def coords_to_range(row, col):
     res += chr(col % 26 + 64)
     res += str(row)
     return res
+
+
+class Auth:
+
+    def __init__(self, path_to_secret, scopes):
+        self.path_to_secret = path_to_secret
+        self.scopes = scopes
+
+    def init_flow(self):
+        client_type, client_info = clientsecrets.loadfile("client_secrets.json")
+        self.client_id = client_info["client_id"]
+        self.client_secret = client_info["client_secret"]
+        self.auth_uri = client_info["auth_uri"]
+        self.token_uri = client_info["token_uri"]
+        self.flow = OAuth2WebServerFlow(self.client_id, self.client_secret, str.join(self.scopes))
+
+    def get_auth_url(self):
+        if self.flow is None:
+            self.init_flow()
+        return self.flow.step1_get_authorize_url()
+
+    def auth(self, auth_code):
+        if self.flow is None:
+            self.init_flow()
+        self.credentials = self.flow.step2_exchange(auth_code)
+
 
 
 class Client:
