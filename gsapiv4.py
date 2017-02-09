@@ -26,14 +26,16 @@ class Auth:
     def __init__(self, path_to_secret, scopes):
         self.path_to_secret = path_to_secret
         self.scopes = scopes
+        self.flow = None
 
     def init_flow(self):
-        client_type, client_info = clientsecrets.loadfile("client_secrets.json")
+        client_type, client_info = clientsecrets.loadfile(self.path_to_secret)
         self.client_id = client_info["client_id"]
         self.client_secret = client_info["client_secret"]
         self.auth_uri = client_info["auth_uri"]
         self.token_uri = client_info["token_uri"]
-        self.flow = OAuth2WebServerFlow(self.client_id, self.client_secret, str.join(self.scopes))
+        self.redirect_uri = client_info["redirect_uris"][0]
+        self.flow = OAuth2WebServerFlow(self.client_id, self.client_secret, self.scopes, redirect_uri=self.redirect_uri)
 
     def get_auth_url(self):
         if self.flow is None:
