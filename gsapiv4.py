@@ -343,6 +343,58 @@ class Spreadsheet:
             }
         )
 
+    def prepare_add_line_chart(self, title, domain: SourceRange, series: SourceRange, announcements: SourceRange,
+                               position: OverlayPosition):
+        self.requests.append(
+            {
+                "addChart": {
+                    "chart": {
+                        "spec": {
+                            "title": title,
+                            "basicChart": {
+                                "chartType": "LINE",
+                                "legendPosition": "RIGHT_LEGEND",
+                                "domains": {
+                                    "domain": {
+                                        "sourceRange": {
+                                            "sources": [
+                                                domain.json
+                                            ]
+                                        }
+                                    }
+
+                                },
+                                "series": [
+                                    {
+                                        "series": {
+                                            "sourceRange": {
+                                                "sources": [
+                                                    series.json
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "series": {
+                                            "sourceRange": {
+                                                "sources": [
+                                                    announcements.json
+                                                ]
+                                            }
+                                        }
+                                    }
+                                ],
+                                "axis": {
+                                    "position": "BOTTOM_AXIS"
+                                }
+                            }
+                        },
+                        "position": position.json
+                    }
+                }
+            }
+        )
+
 
 
 
